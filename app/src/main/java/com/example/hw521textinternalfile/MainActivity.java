@@ -26,14 +26,13 @@ public class MainActivity extends AppCompatActivity {
     private static final String FILE_NAME = "user_data.txt";
     private static final String SHARED_PREF = "sharedPref";
     private static final String STATE_CHB_STORAGE_KEY = "stateChbStorage";
-
+    boolean stateChbStorage;
     private Button btnLogin;
     private Button btnRegistration;
     private EditText edtLogin;
     private EditText edtPassword;
     private CheckBox chbStorage;
     private SharedPreferences sharedPref;
-    boolean stateChbStorage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,8 +57,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-                    stateChbStorage = !stateChbStorage;
-                    sharedPref.edit().putBoolean(STATE_CHB_STORAGE_KEY, stateChbStorage).apply();
+                stateChbStorage = !stateChbStorage;
+                sharedPref.edit().putBoolean(STATE_CHB_STORAGE_KEY, stateChbStorage).apply();
 
             }
         });
@@ -76,52 +75,12 @@ public class MainActivity extends AppCompatActivity {
                 String login = edtLogin.getText().toString();
                 String password = edtPassword.getText().toString();
 
-                FileInputStream fileInputStream = null;
-                try {
-                    fileInputStream = openFileInput(FILE_NAME);
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
+                if (stateChbStorage) {
+                    //TODO loginExternalFile();
+                } else {
+                    loginInternalFile(login, password);
                 }
 
-                if (fileInputStream == null) {
-                    showToast(getString(R.string.error_file_not_found));
-                    return;
-                }
-
-                InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
-                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-
-                String line = null;
-                try {
-                    line = bufferedReader.readLine();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                while (line != null) {
-                    String[] splitLine = line.split(";");
-                    String curLogin = splitLine[0];
-                    String curPassword = splitLine[1];
-
-                    if (curLogin.equals(login) && curPassword.equals(password)) {
-                        showToast(getString(R.string.successful_login));
-                        return;
-                    }
-
-                    try {
-                        line = bufferedReader.readLine();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                }
-
-                try {
-                    bufferedReader.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                showToast(getString(R.string.error_user_not_found));
             }
         });
 
@@ -138,44 +97,102 @@ public class MainActivity extends AppCompatActivity {
                 String login = edtLogin.getText().toString();
                 String password = edtPassword.getText().toString();
 
-                FileOutputStream fileOutputStream = null;
-                try {
-                    if (new File(getFilesDir(), FILE_NAME).exists()) {
-                        fileOutputStream = openFileOutput(FILE_NAME, MODE_APPEND);
-                    } else {
-                        fileOutputStream = openFileOutput(FILE_NAME, MODE_PRIVATE);
-                    }
-
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
+                if (stateChbStorage) {
+                    //TODO registrationExternalFile();
+                } else {
+                    registrationInternalFile(login, password);
                 }
-
-                if (fileOutputStream == null) {
-                    showToast(getString(R.string.error_file_not_found));
-                    return;
-                }
-
-                OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fileOutputStream);
-                BufferedWriter bufferedWriter = new BufferedWriter(outputStreamWriter);
-
-                try {
-                    bufferedWriter.write(login + ";" + password + "\n");
-                    bufferedWriter.flush();
-                } catch (IOException e) {
-                    showToast(getString(R.string.error));
-                    e.printStackTrace();
-                }
-
-                try {
-                    bufferedWriter.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                showToast(getString(R.string.successful_registration));
 
             }
         });
+    }
+
+    private void registrationInternalFile(String login, String password) {
+        FileOutputStream fileOutputStream = null;
+        try {
+            if (new File(getFilesDir(), FILE_NAME).exists()) {
+                fileOutputStream = openFileOutput(FILE_NAME, MODE_APPEND);
+            } else {
+                fileOutputStream = openFileOutput(FILE_NAME, MODE_PRIVATE);
+            }
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        if (fileOutputStream == null) {
+            showToast(getString(R.string.error_file_not_found));
+            return;
+        }
+
+        OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fileOutputStream);
+        BufferedWriter bufferedWriter = new BufferedWriter(outputStreamWriter);
+
+        try {
+            bufferedWriter.write(login + ";" + password + "\n");
+            bufferedWriter.flush();
+        } catch (IOException e) {
+            showToast(getString(R.string.error));
+            e.printStackTrace();
+        }
+
+        try {
+            bufferedWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        showToast(getString(R.string.successful_registration));
+
+    }
+
+    private void loginInternalFile(String login, String password) {
+        FileInputStream fileInputStream = null;
+        try {
+            fileInputStream = openFileInput(FILE_NAME);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        if (fileInputStream == null) {
+            showToast(getString(R.string.error_file_not_found));
+            return;
+        }
+
+        InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
+        BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+
+        String line = null;
+        try {
+            line = bufferedReader.readLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        while (line != null) {
+            String[] splitLine = line.split(";");
+            String curLogin = splitLine[0];
+            String curPassword = splitLine[1];
+
+            if (curLogin.equals(login) && curPassword.equals(password)) {
+                showToast(getString(R.string.successful_login));
+                return;
+            }
+
+            try {
+                line = bufferedReader.readLine();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+        try {
+            bufferedReader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        showToast(getString(R.string.error_user_not_found));
     }
 
     private void showToast(String message) {
