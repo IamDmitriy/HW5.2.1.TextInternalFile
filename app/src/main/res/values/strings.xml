@@ -4,4 +4,5 @@
     <string name="registration">Registration</string>
     <string name="password">Password</string>
     <string name="error_empty_fields">Пожалуйста, заполните все поля</string>
+    <string name="error">Упс! Что-то пошло не так!</string>
 </resources>
