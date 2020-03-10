@@ -9,5 +9,6 @@
     <string name="error_user_not_found">Неправильная комбинация логина и пароля!</string>
     <string name="successful_login">Пользователь найден, вход выполнен успешно</string>
     <string name="successful_registration">Регистрация прошла успешно</string>
+    <string name="save_login_external_storage">Хранить логин во внешнем хранилище</string>
 
 </resources>

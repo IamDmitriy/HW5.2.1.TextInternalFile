@@ -1,9 +1,12 @@
 package com.example.hw521textinternalfile;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -21,11 +24,16 @@ import java.io.OutputStreamWriter;
 
 public class MainActivity extends AppCompatActivity {
     private static final String FILE_NAME = "user_data.txt";
+    private static final String SHARED_PREF = "sharedPref";
+    private static final String STATE_CHB_STORAGE_KEY = "stateChbStorage";
 
     private Button btnLogin;
     private Button btnRegistration;
     private EditText edtLogin;
     private EditText edtPassword;
+    private CheckBox chbStorage;
+    private SharedPreferences sharedPref;
+    boolean stateChbStorage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,10 +44,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void init() {
+        sharedPref = getSharedPreferences(SHARED_PREF, MODE_PRIVATE);
+
         btnLogin = findViewById(R.id.btnLogin);
         btnRegistration = findViewById(R.id.btnRegistration);
         edtLogin = findViewById(R.id.edtLogin);
         edtPassword = findViewById(R.id.edtPassword);
+
+        chbStorage = findViewById(R.id.chbStorage);
+        stateChbStorage = sharedPref.getBoolean(STATE_CHB_STORAGE_KEY, false);
+        chbStorage.setChecked(stateChbStorage);
+        chbStorage.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                    stateChbStorage = !stateChbStorage;
+                    sharedPref.edit().putBoolean(STATE_CHB_STORAGE_KEY, stateChbStorage).apply();
+
+            }
+        });
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override

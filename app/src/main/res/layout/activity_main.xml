@@ -60,4 +60,14 @@
         app:layout_constraintEnd_toEndOf="@+id/edtLogin"
         app:layout_constraintStart_toStartOf="@+id/edtLogin"
         app:layout_constraintTop_toBottomOf="@+id/edtLogin" />
+
+    <CheckBox
+        android:id="@+id/chbStorage"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/save_login_external_storage"
+        app:layout_constraintEnd_toEndOf="@+id/btnRegistration"
+        app:layout_constraintStart_toStartOf="@+id/btnRegistration"
+        app:layout_constraintTop_toBottomOf="@+id/btnRegistration" />
 </androidx.constraintlayout.widget.ConstraintLayout>
