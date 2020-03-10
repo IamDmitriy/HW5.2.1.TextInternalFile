@@ -2,6 +2,7 @@ package com.example.hw521textinternalfile;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Environment;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
@@ -18,6 +19,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -98,13 +100,51 @@ public class MainActivity extends AppCompatActivity {
                 String password = edtPassword.getText().toString();
 
                 if (stateChbStorage) {
-                    //TODO registrationExternalFile();
+                    registrationExternalFile(login, password);
                 } else {
                     registrationInternalFile(login, password);
                 }
 
             }
         });
+    }
+
+    private void registrationExternalFile(String login, String password) {
+        File userDataFile = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_DOCUMENTS), FILE_NAME);
+
+        FileWriter fileWriter = null;
+        try {
+            fileWriter = new FileWriter(userDataFile);
+        } catch (IOException e) {
+            showToast(getString(R.string.error));
+            e.printStackTrace();
+            return;
+        }
+
+        if (userDataFile.exists()) {
+            try {
+                fileWriter.append(login + ";" + password + "\n");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            try {
+                fileWriter.write(login + ";" + password + "\n");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        try {
+            fileWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        showToast(getString(R.string.successful_registration));
+
+
     }
 
     private void registrationInternalFile(String login, String password) {
