@@ -19,15 +19,18 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.Scanner;
 
 public class MainActivity extends AppCompatActivity {
     private static final String FILE_NAME = "user_data.txt";
     private static final String SHARED_PREF = "sharedPref";
     private static final String STATE_CHB_STORAGE_KEY = "stateChbStorage";
+
     boolean stateChbStorage;
     private Button btnLogin;
     private Button btnRegistration;
@@ -78,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
                 String password = edtPassword.getText().toString();
 
                 if (stateChbStorage) {
-                    //TODO loginExternalFile();
+                    loginExternalFile(login, password);
                 } else {
                     loginInternalFile(login, password);
                 }
@@ -107,6 +110,48 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private void loginExternalFile(String login, String password) {
+        File userDataFile = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_DOCUMENTS), FILE_NAME);
+
+        FileReader fileReader = null;
+        try {
+            fileReader = new FileReader(userDataFile);
+        } catch (IOException e) {
+            showToast(getString(R.string.error));
+            e.printStackTrace();
+            return;
+        }
+
+        Scanner scanner = new Scanner(fileReader);
+
+        while (scanner.hasNextLine()) {
+            String line = scanner.nextLine();
+
+            String[] splitLine = line.split(";");
+            String curLogin = splitLine[0];
+            String curPassword = splitLine[1];
+
+            if (curLogin.equals(login) && curPassword.equals(password)) {
+                showToast(getString(R.string.successful_login));
+                try {
+                    fileReader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return;
+            }
+        }
+
+        try {
+            fileReader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        showToast(getString(R.string.error_user_not_found));
     }
 
     private void registrationExternalFile(String login, String password) {
@@ -215,6 +260,11 @@ public class MainActivity extends AppCompatActivity {
 
             if (curLogin.equals(login) && curPassword.equals(password)) {
                 showToast(getString(R.string.successful_login));
+                try {
+                    bufferedReader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 return;
             }
 
