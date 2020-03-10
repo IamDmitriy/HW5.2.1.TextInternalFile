@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 if (fileInputStream == null) {
-                    showToast("Файл не найден"); //TODO вынести в ресурсы
+                    showToast(getString(R.string.error_file_not_found));
                     return;
                 }
 
@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
                     String curPassword = splitLine[1];
 
                     if (curLogin.equals(login) && curPassword.equals(password)) {
-                        showToast("Пользователь найден, вход выполнен успешно");
+                        showToast(getString(R.string.successful_login));
                         return;
                     }
 
@@ -92,7 +92,13 @@ public class MainActivity extends AppCompatActivity {
 
                 }
 
-                showToast("Неправильная комбинация логина и пароля");
+                try {
+                    bufferedReader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                showToast(getString(R.string.error_user_not_found));
             }
         });
 
@@ -109,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
                 String login = edtLogin.getText().toString();
                 String password = edtPassword.getText().toString();
 
-                FileOutputStream fileOutputStream = null; //Выходной поток от нас , для записи в файл
+                FileOutputStream fileOutputStream = null;
                 try {
                     if (new File(getFilesDir(), FILE_NAME).exists()) {
                         fileOutputStream = openFileOutput(FILE_NAME, MODE_APPEND);
@@ -119,21 +125,19 @@ public class MainActivity extends AppCompatActivity {
 
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
-                    //TODO Как может быть не найден файл, если он создаётся?
                 }
 
                 if (fileOutputStream == null) {
-                    showToast("Файл не найден"); //TODO вынести в ресурсы
+                    showToast(getString(R.string.error_file_not_found));
                     return;
                 }
 
-                //TODO почему не требуют обработки IO исключений
-                //Записыватель в этот выходной поток записи в файл
                 OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fileOutputStream);
                 BufferedWriter bufferedWriter = new BufferedWriter(outputStreamWriter);
 
                 try {
                     bufferedWriter.write(login + ";" + password + "\n");
+                    bufferedWriter.flush();
                 } catch (IOException e) {
                     showToast(getString(R.string.error));
                     e.printStackTrace();
@@ -145,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-                showToast("Регистрация прошла успешно!");
+                showToast(getString(R.string.successful_registration));
 
             }
         });
